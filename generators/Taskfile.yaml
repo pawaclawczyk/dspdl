@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  fmt:
+    cmds:
+      - go fmt ./...
+  build:
+    cmds:
+      - go build -o bin/hello cmd/hello/hello.go
+  test:
+    - go test -count=1 -race -cover ./...
