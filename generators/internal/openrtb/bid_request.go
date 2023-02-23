@@ -1,6 +1,7 @@
 package openrtb
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/prebid/openrtb/v17/openrtb2"
@@ -22,8 +23,8 @@ func randomBidRequest() *openrtb2.BidRequest {
 }
 
 // WriteBidRequests creates a file with n random bid requests.
-func WriteBidRequests(n int) {
-	f, err := os.OpenFile("bid_requests.json", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+func WriteBidRequests(n int, path string) {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +33,13 @@ func WriteBidRequests(n int) {
 			panic(err)
 		}
 	}()
-	encoder := json.NewEncoder(f)
+	compressor := gzip.NewWriter(f)
+	defer func() {
+		if err := compressor.Close(); err != nil {
+			panic(err)
+		}
+	}()
+	encoder := json.NewEncoder(compressor)
 	for i := 0; i < n; i++ {
 		if err = encoder.Encode(randomBidRequest()); err != nil {
 			panic(err)
