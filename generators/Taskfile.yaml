@@ -6,6 +6,7 @@ tasks:
       - go fmt ./...
   build:
     cmds:
+      - go build -o bin/generate cmd/generate/generate.go
       - go build -o bin/hello cmd/hello/hello.go
   test:
     - go test -count=1 -race -cover ./...
